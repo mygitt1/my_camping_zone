@@ -20,58 +20,67 @@ class PlacesListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<GreatPlaces>(
-        child: Center(
-          child: Text('No Places added, Start adding some!'),
-        ),
-        builder: (ctx, greatPlaces, ch) => greatPlaces.items.length <= 0
-            ? ch
-            : ListView.builder(
-                itemCount: greatPlaces.items.length,
-                itemBuilder: (ctx, i) => Column(children: [
-                  Stack(
-                    children: [
-                      Card(
-                        margin: EdgeInsets.all(8),
-                        elevation: 6,
-                        child: Container(
-                          height: 200,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: FileImage(
-                                greatPlaces.items[i].image,
+      body: FutureBuilder(
+        future: Provider.of<GreatPlaces>(context, listen: false)
+            .fetchAndSetPlaces(),
+        builder: (ctx, snapshot) => snapshot.connectionState ==
+                ConnectionState.waiting
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Consumer<GreatPlaces>(
+                child: Center(
+                  child: Text('No Places added, Start adding some!'),
+                ),
+                builder: (ctx, greatPlaces, ch) => greatPlaces.items.length <= 0
+                    ? ch
+                    : ListView.builder(
+                        itemCount: greatPlaces.items.length,
+                        itemBuilder: (ctx, i) => Column(children: [
+                          Stack(
+                            children: [
+                              Card(
+                                margin: EdgeInsets.all(8),
+                                elevation: 6,
+                                child: Container(
+                                  height: 200,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: FileImage(
+                                        greatPlaces.items[i].image,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              Positioned(
+                                bottom: 20,
+                                right: 20,
+                                child: Container(
+                                  width: 200,
+                                  color: Colors.black54,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: Text(
+                                    greatPlaces.items[i].title,
+                                    style: TextStyle(
+                                      fontSize: 26,
+                                      color: Colors.white,
+                                    ),
+                                    softWrap: true,
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 20,
-                        right: 20,
-                        child: Container(
-                          width: 200,
-                          color: Colors.black54,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child: Text(
-                            greatPlaces.items[i].title,
-                            style: TextStyle(
-                              fontSize: 26,
-                              color: Colors.white,
-                            ),
-                            softWrap: true,
-                            overflow: TextOverflow.fade,
+                          Divider(
+                            color: Colors.black,
                           ),
-                        ),
+                        ]),
                       ),
-                    ],
-                  ),
-                  Divider(
-                    color: Colors.black,
-                  ),
-                ]),
               ),
       ),
     );
